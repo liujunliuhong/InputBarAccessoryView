@@ -235,10 +235,17 @@ open class InputTextView: UITextView {
     
     open override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
 
-        if action == NSSelectorFromString("paste:") && UIPasteboard.general.hasImages {
-            return isImagePasteEnabled
+        if #available(iOS 10.0, *) {
+            if action == NSSelectorFromString("paste:") && UIPasteboard.general.hasImages {
+                return isImagePasteEnabled
+            }
+            return super.canPerformAction(action, withSender: sender)
+        } else {
+            if action == NSSelectorFromString("paste:") && (UIPasteboard.general.images?.count ?? 0) > 0 {
+                return isImagePasteEnabled
+            }
+            return super.canPerformAction(action, withSender: sender)
         }
-        return super.canPerformAction(action, withSender: sender)
     }
     
     open override func paste(_ sender: Any?) {
